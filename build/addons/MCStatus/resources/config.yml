@@ -1,4 +1,4 @@
 servers:
-  - id: "example"
+  - id: "arixmc"
     address: "mc.devflare.de"
     port: 25565
