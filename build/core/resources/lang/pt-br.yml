@@ -1,0 +1,153 @@
+commands:
+  addons:
+    description: Gerenciar addons.
+    subcommands:
+      list:
+        description: Mostrar a lista de addons.
+      enable:
+        description: Ativar um addon.
+        options:
+          addon: O addon a ser ativado.
+      disable:
+        description: Desativar um addon.
+        options:
+          addon: O addon a ser desativado.
+  reload:
+    description: Recarregar o bot
+  parse:
+    description: Analisar um texto.
+    options:
+      text: O texto a ser analisado.
+      user: O usuário para o qual analisar o texto.
+  leaderboard:
+    description: Mostrar o ranking.
+  meta:
+    description: Gerenciar metadados.
+    subcommands:
+      set:
+        description: Definir metadados.
+      remove:
+        description: Excluir metadados.
+      add:
+        description: Adicionar metadados.
+      subtract:
+        description: Subtrair um valor dos metadados.
+      toggle:
+        description: Alternar metadado booleano.
+      list-add:
+        description: Adicionar um valor aos metadados de lista.
+      list-remove:
+        description: Remover um valor dos metadados de lista.
+    options:
+      key: A chave dos metadados.
+      value: O valor dos metadados.
+      scope: O ID do canal ou usuário para o qual definir os metadados.
+  commands:
+    description: Gerenciar comandos do bot.
+    subcommands:
+      list:
+        description: Mostrar a lista de comandos.
+      enable:
+        description: Ativar um comando.
+        options:
+          command: O comando a ser ativado.
+      disable:
+        description: Desativar um comando.
+        options:
+          command: O comando a ser desativado.
+      permission:
+        description: Gerenciar permissões de comando.
+        subcommands:
+          set:
+            description: Definir permissão do comando.
+            options:
+              command: O comando para o qual definir a permissão.
+              permission: A permissão a ser definida.
+          remove:
+            description: Remover permissão de comando.
+            options:
+              command: O comando para o qual remover a permissão.
+
+no-permission: Você não tem permissão para usar isso.
+in-cooldown: Você está em tempo de recarga. Você poderá executar esta ação novamente em [[cooldown]].
+only-in-primary-guild: Esta ação só pode ser usada no servidor primário.
+invalid-time: "Formato de tempo inválido. Por favor use um formato de tempo válido. Exemplo: 1d, 1h, 1m, 1s."
+
+pagination:
+  select-placeholder: Página [[pagination_current_page]]/[[pagination_total_pages]]
+  placeholder: Selecione uma opção
+  no-items: Nenhum valor para exibir.
+  filter-placeholder: Selecione um filtro
+  next-page: Próxima
+  previous-page: Anterior
+
+leaderboard:
+  title: "### 🏆 Ranking – [[leaderboard_name]]"
+  footer: Página [[pagination_current_page]]/[[pagination_total_pages]]
+  entry: "`[[position]].` [[user_mention]] • [[value]]"
+  value:
+    messages: "**[[value]]** mensagens enviadas"
+
+addons:
+  title: Encontre abaixo a lista de addons disponíveis.
+  info: |
+    ### [[addon_status]] [[addon_name]] v[[addon_version]]
+    Autores: [[addon_authors]]
+  website: Site
+  enabled: O addon `[[addon_name]]` foi ativado. Reinicie o bot para aplicar as alterações.
+  disabled: O addon `[[addon_name]]` foi desativado. Reinicie o bot para aplicar as alterações.
+  already-enabled: O addon `[[addon_name]]` já está ativado.
+  already-disabled: O addon `[[addon_name]]` já está desativado.
+  not-found: O addon `[[addon_name]]` não existe.
+reloaded: O bot foi recarregado. Pode levar alguns segundos para aplicar os comandos.
+error-reloading: |
+  ### Erro ao recarregar o bot
+  Ocorreu um erro ao recarregar o bot.
+  ```
+  [[error_message]]
+  ```  
+parsed: |
+  Analisando o texto para [[target_mention]]:
+
+  ```
+  [[parsed_text]]
+  ```
+engine:
+  missing-argument: O script `[[script]]` está sem o argumento `[[missing]]`.
+  missing-context: O script `[[script]]` está sem o contexto `[[missing]]`.
+
+meta:
+  scope-required: O escopo é obrigatório para esta ação.
+  set: O metadado `[[meta_key]]` foi definido para `[[meta_value]]`.
+  remove: O metadado `[[meta_key]]` foi removido.
+  add: O metadado `[[meta_key]]` foi adicionado com o valor `[[meta_value]]`.
+  subtract: O metadado `[[meta_key]]` teve o valor `[[meta_value]]` subtraído.
+  toggle: O metadado `[[meta_key]]` foi definido para `[[meta_value]]`.
+
+command:
+  not-found: O comando `[[command]]` não foi encontrado.
+  enabled: O comando `[[command]]` foi ativado.
+  disabled: O comando `[[command]]` foi desativado.
+  permission:
+    set: A permissão para o comando `[[command]]` foi atualizada.
+    remove: A permissão para o comando `[[command]]` foi removida.
+    unknown: Valor de permissão inválido.
+
+time:
+  short:
+    second: s
+    minute: m
+    hour: h
+    day: d
+    month: m
+  long:
+    second: segundo
+    seconds: segundos
+    minute: minuto
+    minutes: minutos
+    hour: hora
+    hours: horas
+    day: dia
+    days: dias
+    month: mês
+    months: meses

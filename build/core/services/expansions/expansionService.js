@@ -1,0 +1,73 @@
+import { Collection } from 'discord.js';
+import { Service } from '../../../index.js';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+import { glob } from 'fs/promises';
+/**
+ * Service to manage expansions in the bot.
+ * Expansions are used to add custom placeholders to the bot.
+ */
+export default class ExpansionService extends Service {
+    expansions;
+    constructor(manager) {
+        super(manager);
+        this.expansions = new Collection();
+    }
+    async initialize() {
+        this.manager.logger.info("Placeholder expansions services initialized.");
+        await this.registerFromDir(join(dirname(fileURLToPath(import.meta.url)), 'impl'));
+    }
+    async registerFromDir(expansionsDir, addon = undefined) {
+        const expansionFiles = await Array.fromAsync(glob(join(expansionsDir, '**', '*.js').replace(/\\/g, '/')));
+        await Promise.all(expansionFiles.map(async (filePath) => {
+            const expansionPath = new URL('file://' + filePath.replace(/\\/g, '/')).href;
+            const { default: expansion } = await import(expansionPath);
+            this.registerExpansion(new expansion(this.manager, addon));
+        }));
+    }
+    registerExpansion(expansion) {
+        if (this.expansions.has(expansion.name)) {
+            return this.manager.logger.error(`An expansion with the identifier ${expansion.name} is already registered.`);
+        }
+        this.expansions.set(expansion.name, expansion);
+    }
+    unregisterExpansion(identifier) {
+        this.expansions.delete(identifier);
+    }
+    unregisterByAddon(addon) {
+        for (const [name, expansion] of this.expansions) {
+            if (expansion.addon === addon) {
+                this.expansions.delete(name);
+            }
+        }
+    }
+    async resolvePlaceholders(text, context = {}) {
+        const matches = [...text.matchAll(/%([^%_]+)_(.*?)%/g)];
+        await Promise.all(matches.map(async (match) => {
+            const [fullMatch, identifier, placeholder] = match;
+            const expansion = this.expansions.get(identifier);
+            if (expansion) {
+                const resolvedPlaceholder = await this.resolveNestedPlaceholders(placeholder, context);
+                const replacement = await expansion.onRequest(context, resolvedPlaceholder);
+                if (replacement === undefined)
+                    return;
+                text = text.replace(fullMatch, replacement);
+            }
+        }));
+        return text;
+    }
+    async resolveNestedPlaceholders(placeholder, context) {
+        const nestedMatches = [...placeholder.matchAll(/\{(.*?)_(.*?)\}/g)];
+        await Promise.all(nestedMatches.map(async (nestedMatch) => {
+            const [fullNestedMatch, nestedIdentifier, nestedPlaceholder] = nestedMatch;
+            const nestedExpansion = this.expansions.get(nestedIdentifier);
+            if (nestedExpansion) {
+                const nestedReplacement = await nestedExpansion.onRequest(context, nestedPlaceholder);
+                if (nestedReplacement === undefined)
+                    return;
+                placeholder = placeholder.replace(fullNestedMatch, nestedReplacement);
+            }
+        }));
+        return placeholder;
+    }
+}

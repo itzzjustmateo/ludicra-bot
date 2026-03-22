@@ -1,0 +1,31 @@
+import { Expansion } from '../../../../index.js';
+import { roleMention } from 'discord.js';
+export default class RoleExpansion extends Expansion {
+    name = 'role';
+    async onRequest(context, placeholder) {
+        if (!context.role)
+            return;
+        switch (placeholder) {
+            case 'id':
+                return context.role.id;
+            case 'name':
+                return context.role.name;
+            case 'mention':
+                return roleMention(context.role.id);
+            case 'color':
+                return context.role.hexColor;
+            case 'created_at':
+                return context.role.createdAt.toISOString();
+            case 'position':
+                return context.role.position.toString();
+            case 'hoist':
+                return context.role.hoist ? 'true' : 'false';
+            case 'managed':
+                return context.role.managed ? 'true' : 'false';
+            case 'mentionable':
+                return context.role.mentionable ? 'true' : 'false';
+            case 'member_count':
+                return context.role.members.size.toString();
+        }
+    }
+}

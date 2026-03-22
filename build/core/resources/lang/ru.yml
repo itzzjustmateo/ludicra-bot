@@ -1,0 +1,153 @@
+commands:
+  addons:
+    description: Управление аддонами.
+    subcommands:
+      list:
+        description: Показать список аддонов.
+      enable:
+        description: Включить аддон.
+        options:
+          addon: Аддон для включения.
+      disable:
+        description: Отключить аддон.
+        options:
+          addon: Аддон для отключения.
+  reload:
+    description: Перезагрузить бота
+  parse:
+    description: Разобрать текст.
+    options:
+      text: Текст для разбора.
+      user: Пользователь, для которого нужно разобрать текст.
+  leaderboard:
+    description: Показать таблицу лидеров.
+  meta:
+    description: Управление метаданными.
+    subcommands:
+      set:
+        description: Установить метаданные.
+      remove:
+        description: Удалить метаданные.
+      add:
+        description: Добавить метаданные.
+      subtract:
+        description: Вычесть значение из метаданных.
+      toggle:
+        description: Переключить булевые метаданные.
+      list-add:
+        description: Добавить значение в список метаданных.
+      list-remove:
+        description: Удалить значение из списка метаданных.
+    options:
+      key: Ключ метаданных.
+      value: Значение метаданных.
+      scope: ID канала или пользователя, для которого нужно установить метаданные.
+  commands:
+    description: Управление командами бота.
+    subcommands:
+      list:
+        description: Показать список команд.
+      enable:
+        description: Включить команду.
+        options:
+          command: Команда для включения.
+      disable:
+        description: Отключить команду.
+        options:
+          command: Команда для отключения.
+      permission:
+        description: Управление правами команд.
+        subcommands:
+          set:
+            description: Установить разрешение для команды.
+            options:
+              command: Команда, для которой нужно установить разрешение.
+              permission: Разрешение для установки.
+          remove:
+            description: Удалить разрешение команды.
+            options:
+              command: Команда, у которой нужно удалить разрешение.
+
+no-permission: У вас нет прав для использования этой команды.
+in-cooldown: Сейчас вы в кулдауне. Вы сможете выполнить это действие снова через [[cooldown]].
+only-in-primary-guild: Это действие можно использовать только в основной гильдии.
+invalid-time: "Неверный формат времени. Пожалуйста, используйте допустимый формат времени. Пример: 1d, 1h, 1m, 1s."
+
+pagination:
+  select-placeholder: Страница [[pagination_current_page]]/[[pagination_total_pages]]
+  placeholder: Выберите вариант
+  no-items: Нет значений для отображения.
+  filter-placeholder: Выберите фильтр
+  next-page: Следующая
+  previous-page: Предыдущая
+
+leaderboard:
+  title: "### 🏆 Таблица лидеров – [[leaderboard_name]]"
+  footer: Страница [[pagination_current_page]]/[[pagination_total_pages]]
+  entry: "`[[position]].` [[user_mention]] • [[value]]"
+  value:
+    messages: "**[[value]]** сообщений отправлено"
+
+addons:
+  title: Ниже приведён список доступных аддонов.
+  info: |
+    ### [[addon_status]] [[addon_name]] v[[addon_version]]
+    Авторы: [[addon_authors]]
+  website: Веб-сайт
+  enabled: Аддон `[[addon_name]]` был включён. Перезапустите бота, чтобы применить изменения.
+  disabled: Аддон `[[addon_name]]` был отключён. Перезапустите бота, чтобы применить изменения.
+  already-enabled: Аддон `[[addon_name]]` уже включён.
+  already-disabled: Аддон `[[addon_name]]` уже отключён.
+  not-found: Аддон `[[addon_name]]` не существует.
+reloaded: Бот был перезагружен. Развертывание команд может занять несколько секунд.
+error-reloading: |
+  ### Ошибка при перезагрузке бота
+  Произошла ошибка при перезагрузке бота.
+  ```
+  [[error_message]]
+  ```  
+parsed: |
+  Анализ текста для [[target_mention]]:
+
+  ```
+  [[parsed_text]]
+  ```
+engine:
+  missing-argument: В скрипте `[[script]]` отсутствует аргумент `[[missing]]`.
+  missing-context: В скрипте `[[script]]` отсутствует контекст `[[missing]]`.
+
+meta:
+  scope-required: Необходимо указать область для этого действия.
+  set: Метаданные `[[meta_key]]` установлены в `[[meta_value]]`.
+  remove: Метаданные `[[meta_key]]` были удалены.
+  add: Метаданные `[[meta_key]]` добавлены со значением `[[meta_value]]`.
+  subtract: Из метаданных `[[meta_key]]` было вычтено значение `[[meta_value]]`.
+  toggle: Метаданные `[[meta_key]]` установлены в `[[meta_value]]`.
+
+command:
+  not-found: Команда `[[command]]` не найдена.
+  enabled: Команда `[[command]]` была включена.
+  disabled: Команда `[[command]]` была отключена.
+  permission:
+    set: Разрешение для команды `[[command]]` было обновлено.
+    remove: Разрешение для команды `[[command]]` было удалено.
+    unknown: Недопустимое значение разрешения.
+
+time:
+  short:
+    second: s
+    minute: m
+    hour: h
+    day: d
+    month: m
+  long:
+    second: секунда
+    seconds: секунд
+    minute: минута
+    minutes: минут
+    hour: час
+    hours: часов
+    day: день
+    days: дней
+    month: месяц
+    months: месяцев

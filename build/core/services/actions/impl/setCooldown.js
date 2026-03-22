@@ -1,0 +1,42 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+import { Action, ActionArgumentsValidator, Cooldown } from '../../../../index.js';
+import { IsDefined, IsNumber, IsString } from 'class-validator';
+class ArgumentsValidator extends ActionArgumentsValidator {
+    value;
+    duration;
+}
+__decorate([
+    IsDefined(),
+    IsString(),
+    __metadata("design:type", String)
+], ArgumentsValidator.prototype, "value", void 0);
+__decorate([
+    IsDefined(),
+    IsNumber(),
+    __metadata("design:type", Number)
+], ArgumentsValidator.prototype, "duration", void 0);
+export default class SetCooldownAction extends Action {
+    id = "setCooldown";
+    argumentsValidator = ArgumentsValidator;
+    async onTrigger(script, context, variables) {
+        const duration = script.args.getNumber("duration");
+        const cooldownId = script.args.getString("value");
+        const user = context.user;
+        if (!user)
+            return script.missingContext("user", context);
+        const cooldown = this.manager.services.engine.cooldowns.get(cooldownId);
+        if (!cooldown) {
+            const cooldown = new Cooldown(duration);
+            this.manager.services.engine.cooldowns.set(cooldownId, cooldown);
+        }
+        cooldown?.setCooldown(user.id);
+    }
+}

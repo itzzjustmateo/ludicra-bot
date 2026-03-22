@@ -1,0 +1,36 @@
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
+};
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
+};
+import { Action, ActionArgumentsValidator, Utils } from '../../../../index.js';
+import { IsDefined, IsString } from 'class-validator';
+class ArgumentsValidator extends ActionArgumentsValidator {
+    value;
+}
+__decorate([
+    IsDefined(),
+    IsString({ each: true }),
+    __metadata("design:type", Object)
+], ArgumentsValidator.prototype, "value", void 0);
+export default class AddTagAction extends Action {
+    id = "addTag";
+    argumentsValidator = ArgumentsValidator;
+    async onTrigger(script, context, variables) {
+        if (!context.channel || !context.channel.isThread())
+            return script.missingContext("channel", context);
+        const tags = script.args.getStrings("value");
+        const parsedTag = context.channel.appliedTags;
+        await Promise.all(tags.map(async (tag) => {
+            const resolvedTag = await Utils.applyVariables(tag, variables, context);
+            if (!parsedTag.includes(resolvedTag)) {
+                parsedTag.push(resolvedTag);
+            }
+        }));
+        await context.channel.setAppliedTags(parsedTag, `Tags added by action: ${script.id}`);
+    }
+}

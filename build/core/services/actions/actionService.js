@@ -1,0 +1,53 @@
+import { Collection } from 'discord.js';
+import { ActionData, Service } from '../../../index.js';
+import { dirname, join } from 'path';
+import { fileURLToPath } from 'url';
+import { glob } from 'fs/promises';
+/**
+ * Service to manage actions in the bot.
+ * Actions are used to perform actions in the bot with the scripting system in the engine.
+ */
+export default class ActionService extends Service {
+    actions;
+    constructor(manager) {
+        super(manager);
+        this.actions = new Collection();
+    }
+    async initialize() {
+        await this.registerFromDir(join(dirname(fileURLToPath(import.meta.url)), 'impl'));
+        this.manager.logger.info("Action service initialized.");
+    }
+    async registerFromDir(actionsDir, addon = undefined) {
+        const actionFiles = await Array.fromAsync(glob(join(actionsDir, '**', '*.js').replace(/\\/g, '/')));
+        await Promise.all(actionFiles.map(async (filePath) => {
+            const actionPath = new URL('file://' + filePath.replace(/\\/g, '/')).href;
+            const { default: action } = await import(actionPath);
+            this.registerAction(new action(this.manager, addon));
+        }));
+    }
+    registerAction(action) {
+        if (this.actions.has(action.id))
+            return action.logger.warn(`Action ${action.id} is already registered`);
+        this.actions.set(action.id, action);
+    }
+    parseActions(actions, addon = undefined) {
+        if (!actions)
+            return [];
+        return actions.map(action => new ActionData(this.manager, action, addon?.logger || this.manager.logger));
+    }
+    async triggerAction(script, context, variables = []) {
+        if (!script.id)
+            return script.logError("No action ID found in script");
+        const actionInstance = this.actions.get(script.id);
+        if (!actionInstance)
+            return script.logError(`No action found for ID: ${script.id}`);
+        await actionInstance.trigger(script, context, variables);
+    }
+    unregisterByAddon(addon) {
+        for (const [id, action] of this.actions) {
+            if (action.addon === addon) {
+                this.actions.delete(id);
+            }
+        }
+    }
+}

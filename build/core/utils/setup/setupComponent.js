@@ -1,0 +1,171 @@
+import { manager, Utils } from '../../../index.js';
+import { ActionRowBuilder, SeparatorBuilder, SectionBuilder, MediaGalleryBuilder, FileBuilder, MediaGalleryItemBuilder, TextInputBuilder, TextInputStyle, FileUploadBuilder } from 'discord.js';
+export async function setupComponent(settings) {
+    const config = settings.config;
+    const variables = settings.variables || [];
+    const context = settings.context;
+    const type = config.getString('type');
+    const conditionConfig = config.getSubsectionsOrNull('conditions');
+    if (conditionConfig) {
+        const conditions = manager.services.condition.parseConditions(conditionConfig, false);
+        const isMet = await manager.services.condition.meetsConditions(conditions, context, variables);
+        if (!isMet)
+            return;
+    }
+    switch (type) {
+        case 'button': {
+            return [await Utils.setupButton({ config, variables, context })];
+        }
+        case 'select-menu': {
+            return [await Utils.setupSelectMenu({ config, variables, context })];
+        }
+        case 'text-display': {
+            return [await Utils.setupTextDisplay({ config, variables, context })];
+        }
+        case 'repeat': {
+            const dataSource = config.getString('data-source', true);
+            const template = config.getSubsections('template');
+            const data = context.data?.get(dataSource);
+            if (!data) {
+                config.logger.warn(`Repeat data source "${dataSource}" not found.`);
+                return;
+            }
+            const components = [];
+            for (const item of data) {
+                for (const componentConfig of template) {
+                    const varbles = [...variables, ...item.variables];
+                    const ctxt = { ...context, ...item.context };
+                    const component = await Utils.setupComponent({ config: componentConfig, variables: varbles, context: ctxt });
+                    if (component)
+                        components.push(...component);
+                }
+            }
+            if (!components.length)
+                return;
+            return components;
+        }
+        case 'separator': {
+            const separator = new SeparatorBuilder()
+                .setSpacing(config.getNumber('spacing'))
+                .setDivider(config.getBoolOrNull('divider') ?? true);
+            return [separator];
+        }
+        case 'section': {
+            const section = new SectionBuilder();
+            for (const componentConfig of config.getSubsections('components')) {
+                const conditionConfig = componentConfig.getSubsectionsOrNull('conditions');
+                if (conditionConfig) {
+                    const conditions = manager.services.condition.parseConditions(conditionConfig, false);
+                    const isMet = await manager.services.condition.meetsConditions(conditions, context, variables);
+                    if (!isMet)
+                        continue;
+                }
+                const textDisplay = await Utils.setupTextDisplay({ config: componentConfig, variables, context });
+                section.addTextDisplayComponents(textDisplay);
+            }
+            if (!section.components.length)
+                return;
+            const accessory = config.getSubsection('accessory');
+            if (accessory.getString('type') === 'button') {
+                section.setButtonAccessory(await Utils.setupButton({ config: accessory, variables, context }));
+            }
+            else {
+                section.setThumbnailAccessory(await Utils.setupThumbnail({ config: accessory, variables, context }));
+            }
+            return [section];
+        }
+        case 'thumbnail': {
+            return [await Utils.setupThumbnail({ config, variables, context })];
+        }
+        case 'media-gallery': {
+            const mediaGallery = new MediaGalleryBuilder();
+            for (const mediaconfig of config.getSubsections('items')) {
+                const mediaCondition = mediaconfig.getSubsectionsOrNull('conditions');
+                if (mediaCondition) {
+                    const conditions = manager.services.condition.parseConditions(mediaCondition, false);
+                    const isMet = await manager.services.condition.meetsConditions(conditions, context, variables);
+                    if (!isMet)
+                        continue;
+                }
+                mediaGallery.addItems((await setupMediaGalleryItemBuilder({ config: mediaconfig, variables, context })));
+            }
+            if (!mediaGallery.items.length)
+                return;
+            return [mediaGallery];
+        }
+        case 'file': {
+            const file = new FileBuilder()
+                .setSpoiler(config.getBoolOrNull('spoiler') || false)
+                .setURL(await Utils.applyVariables(config.getString('url', true), variables, context));
+            return [file];
+        }
+        case 'action-row': {
+            const components = config.getSubsections('components');
+            const actionRow = new ActionRowBuilder();
+            for (const componentConfig of components) {
+                const component = await Utils.setupComponent({ config: componentConfig, variables, context });
+                if (component)
+                    actionRow.addComponents(component);
+            }
+            if (!actionRow.components.length)
+                return;
+            return [actionRow];
+        }
+        case 'container': {
+            return [await Utils.setupContainer({ config, variables, context })];
+        }
+        case 'text-input': {
+            let cCustomId = config.getString("custom-id");
+            let cPlaceholder = config.getStringOrNull("placeholder", true) || '';
+            const cRequired = config.getBoolOrNull("required") || false;
+            let cMaxLength = config.getStringOrNull("max-length") || "1000";
+            let cMinLength = config.getStringOrNull("min-length") || "0";
+            let cValue = config.getStringOrNull("value", true) || '';
+            const cStyle = config.getStringOrNull("style");
+            cCustomId = await Utils.applyVariables(cCustomId, variables, context);
+            cPlaceholder = await Utils.applyVariables(cPlaceholder, variables, context);
+            cMaxLength = await Utils.applyVariables(cMaxLength, variables, context);
+            cMinLength = await Utils.applyVariables(cMinLength, variables, context);
+            cValue = await Utils.applyVariables(cValue, variables, context);
+            const textInput = new TextInputBuilder()
+                .setCustomId(cCustomId)
+                .setStyle((cStyle ? Utils.getTextInputStyle(cStyle) || TextInputStyle.Short : TextInputStyle.Short))
+                .setRequired(cRequired)
+                .setMaxLength(parseInt(cMaxLength) || 1000)
+                .setMinLength(parseInt(cMinLength) || 0);
+            if (cPlaceholder && cPlaceholder !== 'undefined') {
+                textInput.setPlaceholder(cPlaceholder);
+            }
+            if (cValue && cValue !== 'undefined') {
+                textInput.setValue(cValue);
+            }
+            return [textInput];
+        }
+        case 'file-upload': {
+            let cCustomId = config.getString("custom-id");
+            const minSelect = config.getNumberOrNull("min-values");
+            const maxSelect = config.getNumberOrNull("max-values") || 1;
+            const cRequired = config.getBoolOrNull("required") || false;
+            cCustomId = await Utils.applyVariables(cCustomId, variables, context);
+            const fileUpload = new FileUploadBuilder()
+                .setMaxValues(maxSelect)
+                .setCustomId(cCustomId)
+                .setRequired(cRequired);
+            if (minSelect)
+                fileUpload.setMinValues(minSelect);
+            return [fileUpload];
+        }
+    }
+}
+async function setupMediaGalleryItemBuilder(settings) {
+    const config = settings.config;
+    const variables = settings.variables || [];
+    const context = settings.context;
+    const description = await Utils.applyVariables(config.getStringOrNull('description', true), variables, context);
+    const item = new MediaGalleryItemBuilder()
+        .setSpoiler(config.getBoolOrNull('spoiler') || false)
+        .setURL(await Utils.applyVariables(config.getString('url', true), variables, context));
+    if (description)
+        item.setDescription(description);
+    return item;
+}

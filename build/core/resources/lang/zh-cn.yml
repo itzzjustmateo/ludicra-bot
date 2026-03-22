@@ -1,0 +1,153 @@
+commands:
+  addons:
+    description: 管理插件。
+    subcommands:
+      list:
+        description: 显示可用插件列表。
+      enable:
+        description: 启用插件。
+        options:
+          addon: 要启用的插件。
+      disable:
+        description: 禁用插件。
+        options:
+          addon: 要禁用的插件。
+  reload:
+    description: 重新加载机器人
+  parse:
+    description: 解析文本。
+    options:
+      text: 要解析的文本。
+      user: 为其解析文本的用户。
+  leaderboard:
+    description: 显示排行榜。
+  meta:
+    description: 管理元数据。
+    subcommands:
+      set:
+        description: 设置元数据。
+      remove:
+        description: 删除元数据。
+      add:
+        description: 添加元数据。
+      subtract:
+        description: 从元数据中减去一个值。
+      toggle:
+        description: 切换布尔型元数据。
+      list-add:
+        description: 向列表型元数据添加一个值。
+      list-remove:
+        description: 从列表型元数据移除一个值。
+    options:
+      key: 元数据的键。
+      value: 元数据的值。
+      scope: 要为其设置元数据的频道或用户的ID。
+  commands:
+    description: 管理机器人命令。
+    subcommands:
+      list:
+        description: 显示命令列表。
+      enable:
+        description: 启用命令。
+        options:
+          command: 要启用的命令。
+      disable:
+        description: 禁用命令。
+        options:
+          command: 要禁用的命令。
+      permission:
+        description: 管理命令权限。
+        subcommands:
+          set:
+            description: 设置命令权限。
+            options:
+              command: 要为其设置权限的命令。
+              permission: 要设置的权限。
+          remove:
+            description: 移除命令权限。
+            options:
+              command: 要移除权限的命令。
+
+no-permission: 你没有权限使用该功能。
+in-cooldown: 你当前处于冷却中。你可以在 [[cooldown]] 后再次执行此操作。
+only-in-primary-guild: 此操作只能在主公会中使用。
+invalid-time: 无效的时间格式。请使用有效的时间格式。例如：1d、1h、1m、1s。
+
+pagination:
+  select-placeholder: 第 [[pagination_current_page]]/[[pagination_total_pages]] 页
+  placeholder: 选择一个选项
+  no-items: 没有可显示的值。
+  filter-placeholder: 选择筛选条件
+  next-page: 下一页
+  previous-page: 上一页
+
+leaderboard:
+  title: "### 🏆 排行榜 – [[leaderboard_name]]"
+  entry: "`[[position]].` [[user_mention]] • [[value]]"
+  footer: 第 [[pagination_current_page]]/[[pagination_total_pages]] 页
+  value:
+    messages: "**[[value]]** 条消息已发送"
+
+addons:
+  title: 以下是可用插件列表。
+  info: |
+    ### [[addon_status]] [[addon_name]] v[[addon_version]]
+    作者：[[addon_authors]]
+  website: 网站
+  enabled: 插件 `[[addon_name]]` 已启用。重启机器人以应用更改。
+  disabled: 插件 `[[addon_name]]` 已禁用。重启机器人以应用更改。
+  already-enabled: 插件 `[[addon_name]]` 已经启用。
+  already-disabled: 插件 `[[addon_name]]` 已经禁用。
+  not-found: 插件 `[[addon_name]]` 不存在。
+reloaded: 机器人已重新加载。部署命令可能需要几秒钟。
+error-reloading: |
+  ### 重新加载机器人时出错
+  重新加载机器人时发生错误。
+  ```
+  [[error_message]]
+  ```  
+parsed: |
+  正在为 [[target_mention]] 解析文本：
+
+  ```
+  [[parsed_text]]
+  ```
+engine:
+  missing-argument: 脚本 `[[script]]` 缺少 `[[missing]]` 参数。
+  missing-context: 脚本 `[[script]]` 缺少 `[[missing]]` 上下文。
+
+meta:
+  scope-required: 此操作需要指定作用域。
+  set: 元数据 `[[meta_key]]` 已设置为 `[[meta_value]]`。
+  remove: 元数据 `[[meta_key]]` 已被移除。
+  add: 元数据 `[[meta_key]]` 已添加，值为 `[[meta_value]]`。
+  subtract: 元数据 `[[meta_key]]` 已从中减去值 `[[meta_value]]`。
+  toggle: 元数据 `[[meta_key]]` 已设置为 `[[meta_value]]`。
+
+command:
+  not-found: 未找到命令 `[[command]]`。
+  enabled: 命令 `[[command]]` 已启用。
+  disabled: 命令 `[[command]]` 已禁用。
+  permission:
+    set: 命令 `[[command]]` 的权限已更新。
+    remove: 命令 `[[command]]` 的权限已被移除。
+    unknown: 无效的权限值。
+
+time:
+  short:
+    second: s
+    minute: m
+    hour: h
+    day: d
+    month: m
+  long:
+    second: 秒
+    seconds: 秒
+    minute: 分钟
+    minutes: 分钟
+    hour: 小时
+    hours: 小时
+    day: 天
+    days: 天
+    month: 个月
+    months: 个月

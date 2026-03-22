@@ -1,0 +1,42 @@
+# This is an example of a script
+# This file is not loaded since it's starting with an underscore
+
+# You can find more information about scripting here:
+# https://docs.itsme.to/itsmybot/scripting
+actions:
+  - triggers: guildMemberAdd
+    conditions:
+      - id: '!isBot'
+    actions:
+      - id: sendMessage
+        args:
+          components:
+            - type: text-display
+              content: "Hello %user_mention%, you have been invited by %invitetracker_inviter%"
+        target:
+          channel: "1184880155026534500"
+      - id: addRole
+        args:
+          value: "1184880155026534500"
+
+  - triggers: everyDay
+    args:
+      every: 7
+    actions:
+      - id: sendMessage
+        args:
+          components:
+            - type: text-display
+              content: 
+                - "Question 1"
+                - "Question 2"
+                - "Question 3"
+                - "Question 4"
+                - "Question 5"
+                - "Question 6"
+                - "Question 7"
+        target:
+          channel: "1184880155026534500"
+
+
+
