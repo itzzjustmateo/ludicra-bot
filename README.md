@@ -1,6 +1,6 @@
-# ArixMC Bot
+# Ludicra Bot
 
-ArixMC Bot is based on ItsMyBot. ItsMyBot is a self-hosted modular Discord bot. It is developed with TypeScript and Node.js and is designed to be easily modifiable through a addon system. The core of the bot has limited functionalities to allow room for addons. It is frequently updated to enhance its features and fix bugs.
+Ludicra's Bot is based on ItsMyBot. ItsMyBot is a self-hosted modular Discord bot. It is developed with TypeScript and Node.js and is designed to be easily modifiable through a addon system. The core of the bot has limited functionalities to allow room for addons. It is frequently updated to enhance its features and fix bugs.
 
 ## Features
 
